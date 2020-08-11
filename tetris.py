@@ -126,7 +126,6 @@ T = [['.....',
 shapes = [S, Z, I, O, J, L, T]  # List of Tetris shapes, index 0 - 6 represent shape
 
 # List of Tetris shape colors
-
 shape_colors = [(0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0), (255, 165, 0), (0, 0, 255), (128, 0, 128)]
 
 
@@ -208,9 +207,9 @@ def draw_grid(surface, grid):
     sy = top_left_y
 
     for i in range(len(grid)):
-        pygame.draw.line(surface, (128,128,128), (sx, sy+i*block_size), (sx+play_width, sy+i*block_size))
+        pygame.draw.line(surface, (128,128,128), (sx, sy + i*block_size), (sx+play_width, sy+ i*block_size))
         for j in range(len(grid[i])):
-            pygame.draw.line(surface, (128,128,128), (sx + j * block_size, sy), (sx + j * block_size, sy + play_height))
+            pygame.draw.line(surface, (128, 128, 128), (sx + j*block_size, sy),(sx + j*block_size, sy + play_height))
 
 
 def clear_rows(grid, locked):
@@ -228,7 +227,7 @@ def clear_rows(grid, locked):
                     continue
 
     if inc > 0:
-        for key in sorted(list(locked), key = lambda x: x[1])[::-1]:
+        for key in sorted(list(locked), key=lambda x: x[1])[::-1]:
             x, y = key
             if y < ind:
                 newKey = (x, y + inc)
@@ -249,7 +248,7 @@ def draw_next_shape(shape, surface):
         row = list(line)
         for j, column in enumerate(row):
             if column == '0':
-                pygame.draw.rect(surface, shape.color, (sx + j * block_size, sy + i * block_size, block_size, block_size), 0)
+                pygame.draw.rect(surface, shape.color, (sx + j*block_size, sy + i*block_size, block_size, block_size), 0)
 
     surface.blit(label, (sx + 10, sy - 30))
 
@@ -290,7 +289,7 @@ def draw_window(surface, grid, score=0, last_score=0):
 
     surface.blit(label, (sx + 20, sy + 160))
     # Last score
-    label = font.render('High Score: ' + last_score, 1, (255, 255, 255))
+    label = font.render('High Score: ' + str(last_score), 1, (255, 255, 255))
 
     sx = top_left_x - 200
     sy = top_left_y + 200
@@ -364,7 +363,7 @@ def main(win):
                 if event.key == pygame.K_DOWN:
                     current_piece.y += 1
                     if not(valid_space(current_piece, grid)):
-                        current_piece.x -= 1
+                        current_piece.y -= 1
 
                 if event.key == pygame.K_UP:
                     current_piece.rotation += 1
@@ -383,12 +382,11 @@ def main(win):
                 p = (pos[0], pos[1])
                 locked_positions[p] = current_piece.color
             current_piece = next_piece
-            next_piece = get_shape()
-            changed_piece = False
-            score += clear_rows(grid, locked_positions) * 10
+            next_piece = get_shape()  # Renders next shape
+            changed_piece = False  # Resets changed_piece state
+            score += clear_rows(grid, locked_positions) * 10  # Increases score by 10 for every row cleared
 
-
-        draw_window(win, grid, score=0, last_score=0)
+        draw_window(win, grid, score, last_score)
         draw_next_shape(next_piece, win)
         pygame.display.update()
 
